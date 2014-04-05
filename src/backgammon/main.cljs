@@ -1,6 +1,10 @@
 (ns backgammon.ui
- (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]))
+  (:require [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true]
+            [cljs.core.async :refer [put! chan <!]]))
+(defn pip
+  ([] { :owner nil :count 0 })
+  ([owner size] { :owner owner :count size } ))
 
 (defn board []
   {:pips (vec (repeatedly 24 pip))})
@@ -31,28 +35,35 @@
           (pip :black 2)
           (pip :black 2)]})
 
-(defn pip
-  ([] { :owner nil :count 0 })
-  ([owner size] { :owner owner :count size } ))
-
 (def app-state (atom {:board (nack-board) }))
 
-(defn render-pip [pip]
-  (let [count (:count pip)]
-  (dom/li nil
-    (if (= count 0)
-      "empty"
-      (str (name (:owner pip)) ": " count)))))
+
+
+(defn pip-view [pip owner]
+  (reify
+    om/IRenderState
+    (render-state [this owner]
+      (let [count (:count pip)]
+      (dom/li #js { :onClick (fn [e] (.log js/console "clicked!") )}
+        (if (= count 0)
+          "empty"
+          (str (name (:owner pip)) ": " count)))))))
 
 (defn board-view [app owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [_]
+      { :move (chan)})
+    om/IWillMount
+    (will-mount [_]
+      ())
+    om/IRenderState
+    (render-state [this owner]
       (dom/div #js{:className "board"}
         (dom/h2 nil "Board")
         (dom/div nil "Black")
         (apply dom/ul nil
-          (map render-pip (:pips (:board app))))
+          (om/build-all pip-view (:pips (:board app)) {}))
         (dom/div nil "White")))))
 
 (om/root
