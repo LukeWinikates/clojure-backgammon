@@ -1,13 +1,11 @@
 (ns backgammon.ui
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! chan <!]]))
 (defn pip
   ([idx] { :index idx :owner nil :count 0 })
   ([idx owner size] { :index idx :owner owner :count size } ))
-
-;(defn board []
-  ;{:pips (vec (repeatedly 24 pip))})
 
 (defn nack-board []
   {:pips [(pip 1 :white 2)
@@ -37,15 +35,21 @@
 
 (def app-state (atom {:board (nack-board) }))
 
-(defn send-move [pip]
-  (.log js/console "clicked!" (:index @pip)))
+(defn apply-move [board target-pip]
+  { :pips (replace { target-pip
+    (merge target-pip
+      { :count (+ 1 (:count target-pip))})} (:pips board))})
+
+(defn send-move [move pip]
+  (.log js/console "clicked!" (:index pip))
+  (put! move pip))
 
 (defn pip-view [pip owner]
   (reify
     om/IRenderState
-    (render-state [this owner]
+    (render-state [this {:keys [move]}]
       (let [count (:count pip)]
-      (dom/li #js { :onClick (fn [e] (send-move pip) )}
+      (dom/li #js { :onClick (fn [e] (send-move move @pip))}
         (if (= count 0)
           "empty"
           (str (name (:owner pip)) ": " count)))))))
@@ -54,22 +58,26 @@
   (reify
     om/IInitState
     (init-state [_]
-      { :move (chan)})
+      {:move (chan)})
     om/IWillMount
     (will-mount [_]
-      ())
+      (let [move (om/get-state owner :move)]
+        (go (loop []
+          (let [pip (<! move)]
+            (om/transact! app :board
+              (fn [board] (apply-move board pip)))
+            (recur))))))
     om/IRenderState
-    (render-state [this owner]
+    (render-state [this {:keys [move]}]
       (dom/div #js{:className "board"}
         (dom/h2 nil "Board")
         (dom/div nil "Black")
         (apply dom/ul nil
-          (om/build-all pip-view (:pips (:board app)) {}))
+          (om/build-all pip-view (:pips (:board app))
+            {:init-state {:move move }}))
         (dom/div nil "White")))))
 
 (om/root
   board-view
   app-state
   {:target (. js/document (getElementById "root"))})
-
-
