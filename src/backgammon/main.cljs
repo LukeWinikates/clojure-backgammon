@@ -2,6 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
+            [backgammon.dice :as dice]
             [cljs.core.async :refer [put! chan <!]]))
 (defn pip
   ([idx] { :index idx :owner nil :count 0 })
@@ -33,7 +34,7 @@
           (pip 23 :black 2)
           (pip 24 :black 2)]})
 
-(def app-state (atom {:board (nack-board) }))
+(def app-state (atom (merge {:board (nack-board)} (dice/pick-first-player))))
 
 (defn apply-move [board target-pip]
   { :pips (replace { target-pip
@@ -43,6 +44,16 @@
 (defn send-move [move pip]
   (.log js/console "clicked!" (:index pip))
   (put! move pip))
+
+(defn turn-view [app owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (dom/h3 nil
+        (str "Current player: " (name (:player app))))
+      (dom/h3 nil
+        (let [dice (:dice app)]
+          (str "Dice: " (nth dice 0) ", " (nth dice 1)))))))
 
 (defn pip-view [pip owner]
   (reify
@@ -71,6 +82,7 @@
     (render-state [this {:keys [move]}]
       (dom/div #js{:className "board"}
         (dom/h2 nil "Board")
+        (om/build turn-view app)
         (dom/div nil "Black")
         (apply dom/ul nil
           (om/build-all pip-view (:pips (:board app))
