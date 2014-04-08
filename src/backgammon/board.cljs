@@ -30,14 +30,20 @@
           (pip 23 :black 2)
           (pip 24 :black 2)]})
 
+(defn find-pip [board source-pip die]
+  (let [pips (:pips board)
+        dir (if (= (:player board) :black) + -)
+        target-idx (dir (:index source-pip) (:value die))]
+    (nth pips (- target-idx 1))))
+
 (defn apply-move [board target-pip]
   (let [new-pip (merge target-pip { :count (+ 1 (:count target-pip))})]
     (.log js/console "target:" (find-pip board target-pip (first (:dice board))))
     (merge board
       { :pips (replace { target-pip new-pip } (:pips board))})))
 
-(defn find-pip [board source-pip die]
-  (let [pips (:pips board)
-        dir (if (= (:player board) :black) + -)
-        target-idx (dir (:index source-pip) (:value die))]
-    (nth pips (- target-idx 1))))
+(defn can-move-to [pip player]
+  (let [pip-owner (:owner pip)]
+    (if (not (nil? pip-owner))
+      (or (= pip-owner player) (< (:count pip) 2))
+    true)))

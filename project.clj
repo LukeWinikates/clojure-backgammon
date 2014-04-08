@@ -9,15 +9,23 @@
                  [compojure "1.1.3"]
                  [ring/ring-core "1.2.1"]
                  [ring/ring-jetty-adapter "1.1.0"]
-                 [om "0.5.3"]]
+                 [om "0.5.3"]
+                 [com.cemerick/clojurescript.test "0.3.0"]]
   :plugins [[lein-ring "0.8.10"]
-            [lein-cljsbuild "1.0.3"]]
+            [lein-cljsbuild "1.0.3"]
+            [com.cemerick/clojurescript.test "0.3.0"]]
   :ring {:handler backgammon.server/index}
   :cljsbuild {
-    :builds [{:id "dev"
-            :source-paths ["src"]
-            :compiler {
-              :output-to "resources/public/main.js"
-              :output-dir "resources/public/out"
-              :optimizations :none
-              :source-map true}}]})
+    :builds { :dev
+              { :source-paths ["src"]
+                :compiler {
+                  :output-to "resources/public/main.js"
+                  :output-dir "resources/public/out"
+                  :optimizations :none
+                  :source-map true }}
+               :test
+               { :source-paths ["src" "test"]
+                 :compiler {
+                  :output-to "target/test/test.js"
+                  :pretty-print true } }}
+    :test-commands {"unit-tests" ["phantomjs" :runner "target/test/test.js"]}})
