@@ -3,43 +3,11 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [backgammon.dice :as dice]
+            [backgammon.board :as board]
             [cljs.core.async :refer [put! chan <!]]))
-(defn pip
-  ([idx] { :index idx :owner nil :count 0 })
-  ([idx owner size] { :index idx :owner owner :count size } ))
 
-(defn nack-board []
-  {:pips [(pip 1 :white 2)
-          (pip 2 :white 2)
-          (pip 3)
-          (pip 4)
-          (pip 5)
-          (pip 6 :black 4)
-          (pip 7)
-          (pip 8 :black 3)
-          (pip 9)
-          (pip 10)
-          (pip 11)
-          (pip 12 :white 4)
-          (pip 13 :black 4)
-          (pip 14)
-          (pip 15)
-          (pip 16)
-          (pip 17 :white 3)
-          (pip 18)
-          (pip 19 :white 4)
-          (pip 20)
-          (pip 21)
-          (pip 22)
-          (pip 23 :black 2)
-          (pip 24 :black 2)]})
-
-(def app-state (atom (merge {:board (nack-board)} (dice/pick-first-player))))
-
-(defn apply-move [board target-pip]
-  { :pips (replace { target-pip
-    (merge target-pip
-      { :count (+ 1 (:count target-pip))})} (:pips board))})
+(def app-state (atom
+   {:board (merge (board/nack-board) (dice/pick-first-player))}))
 
 (defn send-move [move pip]
   (.log js/console "clicked!" (:index pip))
@@ -49,11 +17,12 @@
   (reify
     om/IRenderState
     (render-state [this state]
-      (dom/h3 nil
-        (str "Current player: " (name (:player app))))
-      (dom/h3 nil
-        (let [dice (:dice app)]
-          (str "Dice: " (nth dice 0) ", " (nth dice 1)))))))
+      (dom/div nil
+        (dom/h3 nil
+          (str "Current player: " (name (:player (:board app)))))
+        (dom/h3 nil
+          (let [dice (:dice (:board app))]
+            (str "Dice: " (:value (nth dice 0)) ", " (:value (nth dice 1)))))))))
 
 (defn pip-view [pip owner]
   (reify
@@ -76,7 +45,7 @@
         (go (loop []
           (let [pip (<! move)]
             (om/transact! app :board
-              (fn [board] (apply-move board pip)))
+              (fn [board] (board/apply-move board pip)))
             (recur))))))
     om/IRenderState
     (render-state [this {:keys [move]}]
