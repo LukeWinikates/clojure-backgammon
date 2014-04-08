@@ -47,3 +47,7 @@
     (if (not (nil? pip-owner))
       (or (= pip-owner player) (< (:count pip) 2))
     true)))
+
+(defn can-move-from [pip player]
+  (let [pip-owner (:owner pip)]
+    (= player pip-owner)))
