@@ -45,7 +45,7 @@
         (go (loop []
           (let [pip (<! move)]
             (om/transact! app :board
-              (fn [board] (board/apply-move board pip)))
+              (fn [board] (board/apply-move board pip (first (:dice board)))))
             (recur))))))
     om/IRenderState
     (render-state [this {:keys [move]}]

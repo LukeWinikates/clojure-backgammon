@@ -1,8 +1,17 @@
-(ns backgammon.server)
+(ns backgammon.server
+  (:use compojure.core)
+  (:use ring.middleware.resource)
+  (:require [compojure.handler :as handler]
+            [compojure.route :as route]
+            [clj-jade.core :as jade]))
 
-(require '[clojure.java.io :as io])
-(use 'ring.middleware.resource)
+(jade/configure {
+                 :template-dir "src/backgammon/templates/"
+                 :pretty-print true })
 
-(defn index [x]
-  (resource-request x "public"))
+(defroutes app-routes
+  (GET "/" [] (jade/render "index.jade" {}))
+  (route/resources "/"))
+
+(def index (handler/site app-routes))
 

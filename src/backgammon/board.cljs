@@ -32,15 +32,22 @@
 
 (defn find-pip [board source-pip die]
   (let [pips (:pips board)
-        dir (if (= (:player board) :black) + -)
+        dir (if (= (:player board) :white) + -)
         target-idx (dir (:index source-pip) (:value die))]
     (nth pips (- target-idx 1))))
 
-(defn apply-move [board target-pip]
-  (let [new-pip (merge target-pip { :count (+ 1 (:count target-pip))})]
-    (.log js/console "target:" (find-pip board target-pip (first (:dice board))))
-    (merge board
-      { :pips (replace { target-pip new-pip } (:pips board))})))
+(defn use-die [die dice]
+  dice)
+
+(defn add-checker [pip color]
+  (let [new-count (+ 1 (:count pip))]
+  (merge pip { :owner color :count new-count })))
+
+(defn take-checker [pip color]
+  (let [new-count (- (:count pip) 1)
+        new-color (if (= 0 new-count)
+                    nil color)]
+  (merge pip { :owner new-color :count new-count })))
 
 (defn can-move-to [pip player]
   (let [pip-owner (:owner pip)]
@@ -51,3 +58,23 @@
 (defn can-move-from [pip player]
   (let [pip-owner (:owner pip)]
     (= player pip-owner)))
+
+(defn apply-move [board source-pip die]
+  (let [pips (:pips board)
+        player (:player board)
+        dice (:dice board)
+        target-pip (find-pip board source-pip die)
+        can-move? (and (can-move-from source-pip player)
+                       (can-move-to target-pip player))]
+       (if can-move?
+         (do
+           (.log js/console "we can move!")
+           {
+            :pips (replace
+                    { target-pip (add-checker target-pip player)
+                      source-pip (take-checker source-pip player) }
+                    pips)
+            :dice (use-die die dice)
+            :player player
+            })
+         board)))

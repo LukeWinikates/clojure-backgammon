@@ -9,6 +9,8 @@
                  [compojure "1.1.3"]
                  [ring/ring-core "1.2.1"]
                  [ring/ring-jetty-adapter "1.1.0"]
+                 [clj-jade "0.1.4"]
+                 [compojure "1.1.6"]
                  [om "0.5.3"]
                  [com.cemerick/clojurescript.test "0.3.0"]]
   :plugins [[lein-ring "0.8.10"]
