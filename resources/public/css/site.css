@@ -22,3 +22,22 @@
   height: 100%;
   padding: 4px;
 }
+
+.die {
+  height: 3em;
+  width: 3em;
+  border: 1px solid black;
+  margin: 3px;
+  display: table-cell;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.active-die {
+  background-color: #C0FF67;
+}
+
+.used-die {
+  background-color: gray;
+}

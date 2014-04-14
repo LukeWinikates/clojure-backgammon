@@ -1,4 +1,5 @@
-(ns backgammon.board)
+(ns backgammon.board
+  (:require [backgammon.dice :as dice]))
 
 (defn pip
   ([idx] { :index idx :owner nil :count 0 })
@@ -37,7 +38,7 @@
     (nth pips (- target-idx 1))))
 
 (defn use-die [die dice]
-  dice)
+  (map (fn [d] (merge d {:used (or (:used d) (= die d)) })) dice))
 
 (defn add-checker [pip color]
   (let [new-count (+ 1 (:count pip))]
@@ -74,7 +75,7 @@
                  { target-pip (add-checker target-pip player)
                   source-pip (take-checker source-pip player) }
                  pips)
-         :dice (use-die die dice)
+         :dice (dice/activate (dice/use-die die dice))
          :player player
          })
       board)))

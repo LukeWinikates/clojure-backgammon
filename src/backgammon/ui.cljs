@@ -29,9 +29,13 @@
                 (recur))))))
     om/IRenderState
     (render-state [this {:keys [activate]}]
-      (dom/span #js { :onClick (fn [e] (put! activate die))
-                      :className (str "die " (if (:active die) "active-die" "inactive-die")) }
+      (dom/div #js { :onClick (fn [e] (put! activate die))
+                      :className (die-classes die) }
                 (:value die)))))
+
+(defn die-classes
+  [die]
+  (str "die " (if (:active die) "active-die" "inactive-die" (if (:used die) "used-die"))))
 
 (defn turn-view [app owner]
   (reify
@@ -67,7 +71,7 @@
         (go (loop []
           (let [pip (<! move)]
             (om/transact! app :board
-              (fn [board] (board/apply-move board pip (first (:dice board)))))
+              (fn [board] (board/apply-move board pip (dice/active (:dice board)))))
             (recur))))))
     om/IRenderState
     (render-state [this {:keys [move]}]

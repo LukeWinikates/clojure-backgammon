@@ -7,7 +7,9 @@
   { :value value :used false })
 
 (defn activate
-  ([dice] (activate dice (first dice)))
+  ([dice] (activate
+            dice
+            (first (filter (fn [d] (not (:used d))) dice))))
   ([dice new-active-die]
    (map
      (fn [d] (merge d {:active (= d new-active-die)}))
@@ -22,4 +24,8 @@
       (< left right) { :player :white :dice dice }
       :else (pick-first-player))))
 
+(defn use-die [die dice]
+  (map (fn [d] (merge d {:used (or (:used d) (= die d)) })) dice))
 
+(defn active [dice]
+  (first (filter (fn [d] (:active d)) dice)))
