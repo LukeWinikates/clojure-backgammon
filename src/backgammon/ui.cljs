@@ -13,16 +13,38 @@
   (.log js/console "clicked!" (:index pip))
   (put! move pip))
 
+(defn die-view [die owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      (.log js/console "die" die)
+      { :activate (chan) })
+    om/IWillMount
+    (will-mount [_]
+      (let [activate (om/get-state owner :activate)]
+        (go (loop []
+              (let [die (<! activate)]
+                (om/transact! app :board
+                              (fn [board] (merge board { :dice (dice/activate (:dice board) die) })))
+                (recur))))))
+    om/IRenderState
+    (render-state [this {:keys [activate]}]
+      (dom/span #js { :onClick (fn [e] (put! activate die))
+                      :className (str "die " (if (:active die) "active-die" "inactive-die")) }
+                (:value die)))))
+
 (defn turn-view [app owner]
   (reify
     om/IRenderState
     (render-state [this state]
-      (dom/div nil
-        (dom/h3 nil
-          (str "Current player: " (name (:player (:board app)))))
-        (dom/h3 nil
-          (let [dice (:dice (:board app))]
-            (str "Dice: " (:value (nth dice 0)) ", " (:value (nth dice 1)))))))))
+      (let [dice (:dice (:board app))]
+        (dom/div
+          nil
+          (dom/h3
+            nil
+            (str "Current player: " (name (:player (:board app)))))
+          (apply dom/h3 nil
+                 (om/build-all die-view dice)))))))
 
 (defn pip-view [pip owner]
   (reify
@@ -50,8 +72,6 @@
     om/IRenderState
     (render-state [this {:keys [move]}]
       (dom/div #js{:className "board"}
-        (dom/h2 nil "Board")
-        (om/build turn-view app)
         (dom/div nil "Black")
         (apply dom/ul nil
           (om/build-all pip-view (:pips (:board app))
@@ -59,6 +79,11 @@
         (dom/div nil "White")))))
 
 (om/root
+  turn-view
+  app-state
+  {:target (. js/document (getElementById "sidebar"))})
+
+(om/root
   board-view
   app-state
-  {:target (. js/document (getElementById "root"))})
+  {:target (. js/document (getElementById "main-panel"))})

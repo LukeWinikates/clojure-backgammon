@@ -66,15 +66,15 @@
         target-pip (find-pip board source-pip die)
         can-move? (and (can-move-from source-pip player)
                        (can-move-to target-pip player))]
-       (if can-move?
-         (do
-           (.log js/console "we can move!")
-           {
-            :pips (replace
-                    { target-pip (add-checker target-pip player)
-                      source-pip (take-checker source-pip player) }
-                    pips)
-            :dice (use-die die dice)
-            :player player
-            })
-         board)))
+    (if can-move?
+      (do
+        (.log js/console "we can move!")
+        {
+         :pips (replace
+                 { target-pip (add-checker target-pip player)
+                  source-pip (take-checker source-pip player) }
+                 pips)
+         :dice (use-die die dice)
+         :player player
+         })
+      board)))

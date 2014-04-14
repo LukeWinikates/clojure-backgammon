@@ -1,0 +1,24 @@
+.bordered {
+  border: 2px solid #73FF80;
+}
+
+.row {
+  min-height: 520px;
+}
+
+#sidebar {
+  display: inline-block;
+  float: left;
+  width: calc(18% - 12px);
+  height: 100%;
+  padding: 4px;
+}
+
+#main-panel {
+  display: inline-block;
+  float: left;
+  width: calc(82% - 12px);
+  border-right: 2px solid #73FF80;
+  height: 100%;
+  padding: 4px;
+}
