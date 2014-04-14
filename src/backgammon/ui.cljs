@@ -48,7 +48,9 @@
             nil
             (str "Current player: " (name (:player (:board app)))))
           (apply dom/h3 nil
-                 (om/build-all die-view dice)))))))
+                 (om/build-all die-view dice))
+          (if (dice/all-used? dice)
+            (dom/span nil "Roll")))))))
 
 (defn pip-view [pip owner]
   (reify

@@ -29,3 +29,8 @@
 
 (defn active [dice]
   (first (filter (fn [d] (:active d)) dice)))
+
+(defn all-used? [dice]
+  (every?
+    (fn [d] (:used d))
+    dice))

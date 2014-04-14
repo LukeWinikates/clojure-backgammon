@@ -37,8 +37,6 @@
         target-idx (dir (:index source-pip) (:value die))]
     (nth pips (- target-idx 1))))
 
-(defn use-die [die dice]
-  (map (fn [d] (merge d {:used (or (:used d) (= die d)) })) dice))
 
 (defn add-checker [pip color]
   (let [new-count (+ 1 (:count pip))]
