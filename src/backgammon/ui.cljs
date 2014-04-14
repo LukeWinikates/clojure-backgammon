@@ -39,8 +39,19 @@
 
 (defn turn-view [app owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      { :roll (chan) })
+    om/IWillMount
+    (will-mount [_]
+      (let [roll (om/get-state owner :roll)]
+        (go (loop []
+              (let [msg (<! roll)]
+                (om/transact! app :board
+                              dice/roll)
+              (recur))))))
     om/IRenderState
-    (render-state [this state]
+    (render-state [this {:keys [roll]}]
       (let [dice (:dice (:board app))]
         (dom/div
           nil
@@ -50,7 +61,11 @@
           (apply dom/h3 nil
                  (om/build-all die-view dice))
           (if (dice/all-used? dice)
-            (dom/span nil "Roll")))))))
+            (dom/span
+             # js { :onClick (fn [e]
+                               (.log js/console "rolling!")
+                               (put! roll "ignore"))}
+              "Roll")))))))
 
 (defn pip-view [pip owner]
   (reify

@@ -63,7 +63,8 @@
         player (:player board)
         dice (:dice board)
         target-pip (find-pip board source-pip die)
-        can-move? (and (can-move-from source-pip player)
+        can-move? (and (dice/unused? die)
+                       (can-move-from source-pip player)
                        (can-move-to target-pip player))]
     (if can-move?
       (do

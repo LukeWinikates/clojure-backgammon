@@ -1,6 +1,6 @@
 (ns backgammon.dice)
 
-(defn roll []
+(defn roll-one []
   (+ 1 (rand-int 6)))
 
 (defn die [value]
@@ -16,8 +16,8 @@
      dice)))
 
 (defn pick-first-player []
-  (let [left (roll)
-        right (roll)
+  (let [left (roll-one)
+        right (roll-one)
         dice (activate (map die [left right]))]
     (cond
       (> left right) { :player :black :dice dice }
@@ -34,3 +34,22 @@
   (every?
     (fn [d] (:used d))
     dice))
+
+(defn roll-dice [dice]
+  (activate (map die [(roll-one) (roll-one)])))
+
+(defn roll
+  [board]
+  (merge board
+         { :player (swap-player (:player board))
+           :dice (roll-dice (:dice board)) }))
+
+(defn swap-player [player]
+  (if
+    (= player :black)
+    :white
+    :black))
+
+(defn unused? [die]
+  (and (not (nil? die))
+       (not (:used die))))
