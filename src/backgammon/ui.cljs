@@ -13,25 +13,11 @@
   (.log js/console "clicked!" (:index pip))
   (put! move pip))
 
-(defn die-view [die owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      (.log js/console "die" die)
-      { :activate (chan) })
-    om/IWillMount
-    (will-mount [_]
-      (let [activate (om/get-state owner :activate)]
-        (go (loop []
-              (let [die (<! activate)]
-                (om/transact! app :board
-                              (fn [board] (merge board { :dice (dice/activate (:dice board) die) })))
-                (recur))))))
-    om/IRenderState
-    (render-state [this {:keys [activate]}]
-      (dom/div #js { :onClick (fn [e] (put! activate die))
-                      :className (die-classes die) }
-                (:value die)))))
+(defn make-die-view [die activate]
+  (.log js/console activate)
+  (dom/div #js { :onClick (fn [e] (put! activate die))
+                :className (die-classes die) }
+           (:value die)))
 
 (defn die-classes
   [die]
@@ -43,31 +29,37 @@
   (reify
     om/IInitState
     (init-state [_]
-      { :roll (chan) })
+      { :roll (chan) :activate (chan)})
     om/IWillMount
     (will-mount [_]
-      (let [roll (om/get-state owner :roll)]
+      (let [roll (om/get-state owner :roll)
+            activate (om/get-state owner :activate)]
         (go (loop []
               (let [msg (<! roll)]
                 (om/transact! app :board
                               dice/roll)
-              (recur))))))
+              (recur))))
+            (go (while true
+                  (let [die (<! activate)]
+                    (.log js/console "activate!")
+                    (om/transact! app :board
+                       (fn [board]
+                         (assoc board :dice (dice/activate (:dice board) die)))))))))
     om/IRenderState
-    (render-state [this {:keys [roll]}]
+    (render-state [this {:keys [roll activate]}]
       (let [dice (:dice (:board app))]
-        (dom/div
-          nil
-          (dom/h3
-            nil
+        (dom/div nil
+          (dom/h3 nil
             (str "Current player: " (name (:player (:board app)))))
           (apply dom/h3 nil
-                 (om/build-all die-view dice))
+                 (map #(make-die-view % activate) dice))
           (if (dice/all-used? dice)
-            (dom/span
-             # js { :onClick (fn [e]
-                               (.log js/console "rolling!")
-                               (put! roll "ignore"))}
-              "Roll")))))))
+            (make-roll-button roll)))))))
+
+(defn make-roll-button [roll]
+  (dom/button
+    #js {:onClick #(put! roll 'ignore) :class "btn" }
+    "Roll"))
 
 (defn pip-view [pip owner]
   (reify
