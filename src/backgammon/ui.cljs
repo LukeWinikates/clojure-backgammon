@@ -35,7 +35,9 @@
 
 (defn die-classes
   [die]
-  (str "die " (if (:active die) "active-die" "inactive-die" (if (:used die) "used-die"))))
+  (str "die "
+       (if (:active die) "active-die" "inactive-die")
+       (if (:used die) " used-die")))
 
 (defn turn-view [app owner]
   (reify
