@@ -14,7 +14,6 @@
   (put! move pip))
 
 (defn make-die-view [die activate]
-  (.log js/console activate)
   (dom/div #js { :onClick (fn [e] (put! activate die))
                 :className (die-classes die) }
            (:value die)))
@@ -28,8 +27,7 @@
 (defn turn-view [app owner]
   (reify
     om/IInitState
-    (init-state [_]
-      { :roll (chan) :activate (chan)})
+    (init-state [_] { :roll (chan) :activate (chan)})
     om/IWillMount
     (will-mount [_]
       (let [roll (om/get-state owner :roll)
@@ -58,7 +56,7 @@
 
 (defn make-roll-button [roll]
   (dom/button
-    #js {:onClick #(put! roll 'ignore) :class "btn" }
+    #js {:onClick #(put! roll 'ignore) :className "btn" }
     "Roll"))
 
 (defn pip-view [pip owner]
