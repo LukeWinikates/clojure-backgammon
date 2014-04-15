@@ -59,15 +59,13 @@
     #js {:onClick #(put! roll 'ignore) :className "btn" }
     "Roll"))
 
-(defn pip-view [pip owner]
-  (reify
-    om/IRenderState
-    (render-state [this {:keys [move]}]
-      (let [count (:count pip)]
-      (dom/li #js { :onClick (fn [e] (send-move move @pip))}
-        (if (= count 0)
-          "empty"
-          (str (name (:owner pip)) ": " count)))))))
+(defn make-pip-view [pip pips move-chan]
+  (let [checker-count (:count pip)]
+    (dom/li #js { :onClick (fn [e] (send-move move-chan @pip))
+                 :className "pip" }
+            (if (= checker-count 0)
+              "empty"
+              (str (name (:owner pip)) ": " checker-count)))))
 
 (defn board-view [app owner]
   (reify
@@ -84,12 +82,12 @@
             (recur))))))
     om/IRenderState
     (render-state [this {:keys [move]}]
-      (dom/div #js{:className "board"}
-        (dom/div nil "Black")
-        (apply dom/ul nil
-          (om/build-all pip-view (:pips (:board app))
-            {:init-state {:move move }}))
-        (dom/div nil "White")))))
+      (let [pips (:pips (:board app))]
+        (dom/div #js{:className "board"}
+          (dom/div nil "Black")
+            (apply dom/ul nil
+               (map #(make-pip-view % pips move) pips ))
+          (dom/div nil "White"))))))
 
 (om/root
   turn-view
