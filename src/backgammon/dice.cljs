@@ -12,7 +12,7 @@
             (first (filter (fn [d] (not (:used d))) dice))))
   ([dice new-active-die]
    (map
-     (fn [d] (merge d {:active (= d new-active-die)}))
+     (fn [d] (merge d {:active (identical? d new-active-die)}))
      dice)))
 
 (defn pick-first-player []
@@ -25,7 +25,7 @@
       :else (pick-first-player))))
 
 (defn use-die [die dice]
-  (map (fn [d] (merge d {:used (or (:used d) (= die d)) })) dice))
+  (map (fn [d] (merge d {:used (or (:used d) (identical? die d)) })) dice))
 
 (defn active [dice]
   (first (filter (fn [d] (:active d)) dice)))
