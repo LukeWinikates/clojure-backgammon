@@ -41,3 +41,18 @@
 .used-die {
   background-color: gray;
 }
+
+.pip {
+  display: inline-flex;
+  height: 200px;
+  width: 40px;
+  border: 1px solid black;
+}
+
+.pip.red {
+  background-color: brown;
+}
+
+.pip.white {
+  background-color: white;
+}

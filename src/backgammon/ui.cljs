@@ -2,6 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
+            [clojure.string]
             [backgammon.dice :as dice]
             [backgammon.board :as board]
             [cljs.core.async :refer [put! chan <!]]))
@@ -59,10 +60,18 @@
     #js {:onClick #(put! roll 'ignore) :className "btn" }
     "Roll"))
 
+(defn pip-classes [pip]
+  (clojure.string.join " "
+    ["pip"
+     (if (even? (:index pip))
+        "red"
+        "black")
+     ]))
+
 (defn make-pip-view [pip pips move-chan]
   (let [checker-count (:count pip)]
     (dom/li #js { :onClick (fn [e] (send-move move-chan @pip))
-                 :className "pip" }
+                 :className (pip-classes pip) }
             (if (= checker-count 0)
               "empty"
               (str (name (:owner pip)) ": " checker-count)))))
@@ -85,8 +94,10 @@
       (let [pips (:pips (:board app))]
         (dom/div #js{:className "board"}
           (dom/div nil "Black")
-            (apply dom/ul nil
-               (map #(make-pip-view % pips move) pips ))
+            (apply dom/ul #js{:className "top-pips" }
+               (map #(make-pip-view % pips move) (reverse (subvec pips 0 (/(count pips) 2)))))
+            (apply dom/ul #js{:className "bottom-pips"}
+               (map #(make-pip-view % pips move) (subvec pips (/ (count pips) 2) (count pips))))
           (dom/div nil "White"))))))
 
 (om/root
