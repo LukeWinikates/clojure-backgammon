@@ -5,10 +5,14 @@
             [clojure.string]
             [backgammon.dice :as dice]
             [backgammon.board :as board]
+            [backgammon.gutter :as gutter]
             [cljs.core.async :refer [put! chan <!]]))
 
 (def app-state (atom
-   {:board (merge (board/nack-board) (dice/pick-first-player))}))
+   {:board (merge
+             (board/nack-board)
+             (dice/pick-first-player)
+             { :gutters { :white { :count 0 } :black { :count 0 } } } )}))
 
 (defn send-move [move pip]
   (.log js/console "clicked!" (:index pip))
@@ -75,6 +79,10 @@
               "empty"
               (str (name (:owner pip)) ": " checker-count)))))
 
+(defn gutter-view [gutter]
+  (dom/div nil
+           (str "Captured checkers: " (:count gutter))))
+
 (defn board-view [app owner]
   (reify
     om/IInitState
@@ -91,14 +99,18 @@
     om/IRenderState
     (render-state [this {:keys [move]}]
       (let [pips (:pips (:board app))
+            black-gutter (:black (:gutters (:board app)))
+            white-gutter (:white (:gutters (:board app)))
             top-pips (reverse (subvec pips 0 (/(count pips) 2)))
             bottom-pips (subvec pips (/ (count pips) 2) (count pips))]
         (dom/div #js{:className "board"}
           (dom/div nil "Black")
+            (gutter-view black-gutter)
             (apply dom/ul #js{:className "top-pips" }
                (map #(make-pip-view % move) top-pips))
             (apply dom/ul #js{:className "bottom-pips"}
                (map #(make-pip-view % move) bottom-pips))
+            (gutter-view white-gutter)
           (dom/div nil "White"))))))
 
 (om/root

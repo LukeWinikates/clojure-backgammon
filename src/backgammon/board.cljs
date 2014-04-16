@@ -1,8 +1,9 @@
 (ns backgammon.board
-  (:require [backgammon.dice :as dice]))
+  (:require [backgammon.dice :as dice]
+            [backgammon.gutter :as gutter]))
 
 (defn pip
-  ([idx] { :index idx :owner nil :count 0 })
+  ([idx] (pip idx nil 0))
   ([idx owner size] { :index idx :owner owner :count size } ))
 
 (defn nack-board []
@@ -39,7 +40,9 @@
 
 
 (defn add-checker [pip color]
-  (let [new-count (+ 1 (:count pip))]
+  (let [capture? (not (= (:owner pip) color))
+        new-count (if capture? 1
+                    (+ 1 (:count pip)))]
   (merge pip { :owner color :count new-count })))
 
 (defn take-checker [pip color]
@@ -65,7 +68,12 @@
         target-pip (find-pip board source-pip die)
         can-move? (and (dice/unused? die)
                        (can-move-from source-pip player)
-                       (can-move-to target-pip player))]
+                       (can-move-to target-pip player))
+        capture? (and can-move?
+                      (not (= (:player target-pip) player)))
+        gutters (if capture?
+                      (gutter/capture gutters (dice/swap-player player))
+                      gutters)]
     (if can-move?
       (do
         (.log js/console "we can move!")
@@ -76,5 +84,6 @@
                  pips)
          :dice (dice/activate (dice/use-die die dice))
          :player player
+         :gutters gutters
          })
       board)))
