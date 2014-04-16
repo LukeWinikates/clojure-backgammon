@@ -2,6 +2,11 @@
   border: 2px solid #73FF80;
 }
 
+body {
+  max-width: 1024px;
+  margin: auto;
+}
+
 .row {
   min-height: 520px;
 }
