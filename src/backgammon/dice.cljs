@@ -16,7 +16,7 @@
      dice)))
 
 (defn pick-first-player []
-  (let [left (roll-one)
+  (let [left  (roll-one)
         right (roll-one)
         dice (activate (map die [left right]))]
     (cond
@@ -35,14 +35,18 @@
     (fn [d] (:used d))
     dice))
 
-(defn roll-dice [dice]
-  (activate (map die [(roll-one) (roll-one)])))
+(defn roll-dice []
+  (let [[a b] [(roll-one) (roll-one)]
+        dice (if (= a b)
+               [a a a a]
+               [a b])]
+  (activate (map die dice))))
 
 (defn roll
   [board]
   (merge board
          { :player (swap-player (:player board))
-           :dice (roll-dice (:dice board)) }))
+           :dice (roll-dice) }))
 
 (defn swap-player [player]
   (if
