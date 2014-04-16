@@ -65,10 +65,9 @@
     ["pip"
      (if (even? (:index pip))
         "red"
-        "black")
-     ]))
+        "black")]))
 
-(defn make-pip-view [pip pips move-chan]
+(defn make-pip-view [pip move-chan]
   (let [checker-count (:count pip)]
     (dom/li #js { :onClick (fn [e] (send-move move-chan @pip))
                  :className (pip-classes pip) }
@@ -91,13 +90,15 @@
             (recur))))))
     om/IRenderState
     (render-state [this {:keys [move]}]
-      (let [pips (:pips (:board app))]
+      (let [pips (:pips (:board app))
+            top-pips (reverse (subvec pips 0 (/(count pips) 2)))
+            bottom-pips (subvec pips (/ (count pips) 2) (count pips))]
         (dom/div #js{:className "board"}
           (dom/div nil "Black")
             (apply dom/ul #js{:className "top-pips" }
-               (map #(make-pip-view % pips move) (reverse (subvec pips 0 (/(count pips) 2)))))
+               (map #(make-pip-view % move) top-pips))
             (apply dom/ul #js{:className "bottom-pips"}
-               (map #(make-pip-view % pips move) (subvec pips (/ (count pips) 2) (count pips))))
+               (map #(make-pip-view % move) bottom-pips))
           (dom/div nil "White"))))))
 
 (om/root
