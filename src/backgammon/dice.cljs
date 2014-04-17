@@ -45,17 +45,17 @@
                [a b])]
   (activate (map die dice))))
 
-(defn roll
-  [board]
-  (merge board
-         { :player (swap-player (:player board))
-           :dice (roll-dice) }))
-
 (defn swap-player [player]
   (if
     (= player :black)
     :white
     :black))
+
+(defn roll
+  [board]
+  (merge board
+         { :player (swap-player (:player board))
+           :dice (roll-dice) }))
 
 (defn unused? [die]
   (and (not (nil? die))

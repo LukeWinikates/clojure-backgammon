@@ -65,13 +65,14 @@
   (let [pips (:pips board)
         player (:player board)
         dice (:dice board)
+        gutters (:gutters board)
         target-pip (find-pip board source-pip die)
         can-move? (and (dice/unused? die)
                        (can-move-from source-pip player)
                        (can-move-to target-pip player))
         capture? (and can-move?
                       (not (= (:player target-pip) player)))
-        gutters (if capture?
+        new-gutters (if capture?
                       (gutter/capture gutters (dice/swap-player player))
                       gutters)]
     (if can-move?
@@ -84,6 +85,6 @@
                  pips)
          :dice (dice/activate (dice/use-die die dice))
          :player player
-         :gutters gutters
+         :gutters new-gutters
          })
       board)))

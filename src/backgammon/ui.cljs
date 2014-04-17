@@ -18,16 +18,21 @@
   (.log js/console "clicked!" (:index pip))
   (put! move pip))
 
-(defn make-die-view [die activate]
-  (dom/div #js { :onClick (fn [e] (put! activate die))
-                :className (die-classes die) }
-           (:value die)))
-
 (defn die-classes
   [die]
   (str "die "
        (if (:active die) "active-die" "inactive-die")
        (if (:used die) " used-die")))
+
+(defn make-die-view [die activate]
+  (dom/div #js { :onClick (fn [e] (put! activate die))
+                :className (die-classes die) }
+           (:value die)))
+
+(defn make-roll-button [roll]
+  (dom/button
+    #js {:onClick #(put! roll 'ignore) :className "btn" }
+    "Roll"))
 
 (defn turn-view [app owner]
   (reify
@@ -58,11 +63,6 @@
                  (map #(make-die-view % activate) dice))
           (if (dice/all-used? dice)
             (make-roll-button roll)))))))
-
-(defn make-roll-button [roll]
-  (dom/button
-    #js {:onClick #(put! roll 'ignore) :className "btn" }
-    "Roll"))
 
 (defn pip-classes [pip]
   (clojure.string.join " "

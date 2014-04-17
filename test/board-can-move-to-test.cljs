@@ -1,4 +1,4 @@
-(ns backgammon.board-test
+(ns backgammon.board-can-move-to-test
   (:require-macros [cemerick.cljs.test
                     :refer (is deftest with-test run-tests testing test-var)])
   (:require [cemerick.cljs.test :as t]

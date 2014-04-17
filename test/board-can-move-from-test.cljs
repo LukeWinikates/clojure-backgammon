@@ -1,4 +1,4 @@
-(ns backgammon.board-test
+(ns backgammon.board-can-move-from-test
   (:require-macros [cemerick.cljs.test
                     :refer (is deftest with-test run-tests testing test-var)])
   (:require [cemerick.cljs.test :as t]
@@ -13,4 +13,4 @@
     (is (not (board/can-move-from pip :white)))))
 
 (deftest can-move-from-when-pip-is-empty-is-false
-  (is (not (board/can-move-from (board/pip) :white))))
+  (is (not (board/can-move-from (board/pip 0) :white))))
