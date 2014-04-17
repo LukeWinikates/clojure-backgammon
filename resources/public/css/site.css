@@ -47,6 +47,10 @@ body {
   background-color: gray;
 }
 
+.pip-row {
+  display: inline-block;
+}
+
 .pip {
   display: inline-flex;
   height: 200px;
@@ -60,4 +64,16 @@ body {
 
 .pip.white {
   background-color: white;
+}
+
+.gutter {
+  padding: 0px 20px;
+  display: inline-block;
+  width: 124px;
+  position: relative;
+  top: 20px;
+}
+
+.pips {
+  display: inline-block;
 }

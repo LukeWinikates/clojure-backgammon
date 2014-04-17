@@ -80,7 +80,7 @@
               (str (name (:owner pip)) ": " checker-count)))))
 
 (defn gutter-view [gutter]
-  (dom/div nil
+  (dom/div #js {:className "gutter" }
            (str "Captured checkers: " (:count gutter))))
 
 (defn board-view [app owner]
@@ -105,12 +105,16 @@
             bottom-pips (subvec pips (/ (count pips) 2) (count pips))]
         (dom/div #js{:className "board"}
           (dom/div nil "Black")
-            (gutter-view black-gutter)
-            (apply dom/ul #js{:className "top-pips" }
-               (map #(make-pip-view % move) top-pips))
-            (apply dom/ul #js{:className "bottom-pips"}
-               (map #(make-pip-view % move) bottom-pips))
-            (gutter-view white-gutter)
+                 (dom/div nil
+                          (dom/div #js {:className "pip-row"}
+                               (apply dom/ul #js{:className "top-pips pips" }
+                                 (map #(make-pip-view % move) top-pips)))
+                          (gutter-view black-gutter))
+                 (dom/div nil
+                          (dom/div #js {:className "pip-row" }
+                          (apply dom/ul #js{:className "bottom-pips pips"}
+                                 (map #(make-pip-view % move) bottom-pips))
+                          (gutter-view white-gutter)))
           (dom/div nil "White"))))))
 
 (om/root
