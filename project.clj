@@ -30,4 +30,4 @@
                  :compiler {
                   :output-to "target/test/test.js"
                   :pretty-print true } }}
-    :test-commands {"unit-tests" ["phantomjs" :runner "target/test/test.js"]}})
+    :test-commands {"unit-tests" ["phantomjs" :runner "test/react-stub.js" "target/test/test.js"]}})

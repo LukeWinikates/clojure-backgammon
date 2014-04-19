@@ -117,12 +117,13 @@
                           (gutter-view white-gutter)))
           (dom/div nil "White"))))))
 
-(om/root
-  turn-view
-  app-state
-  {:target (. js/document (getElementById "sidebar"))})
+(defn boot []
+  (om/root
+    turn-view
+    app-state
+    {:target (. js/document (getElementById "sidebar"))})
 
-(om/root
-  board-view
-  app-state
-  {:target (. js/document (getElementById "main-panel"))})
+  (om/root
+    board-view
+    app-state
+    {:target (. js/document (getElementById "main-panel"))}))

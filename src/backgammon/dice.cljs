@@ -15,6 +15,9 @@
      (fn [d] (merge d {:active (identical? d new-active-die)}))
      dice)))
 
+(defn from-values [values]
+  (activate (map die values)))
+
 (defn pick-first-player []
   (let [left  (roll-one)
         right (roll-one)
