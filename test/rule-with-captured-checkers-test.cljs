@@ -30,6 +30,6 @@
 
 (deftest with-captured-checkers-when-this-player-is-captured-and-is-moving-captured-checker-is-true
   (let [board (merge new-board { :gutters { :black { :count 1 } :white { :count 0 }}})
-        move { :source (:black (:gutter board) 12)
+        move { :source (:black (:gutters board))
             :die (first (:dice board)) }]
     (is (= true (rules/with-captured-checkers board move)))))
