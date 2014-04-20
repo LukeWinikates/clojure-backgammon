@@ -25,9 +25,11 @@
                   :output-dir "resources/public/out"
                   :optimizations :none
                   :source-map true }}
-               :test
+               :tests
                { :source-paths ["src" "test"]
                  :compiler {
                   :output-to "target/test/test.js"
-                  :pretty-print true } }}
+                  :pretty-print true }
+                 :notify-command ["phantomjs" :cljs.test/runner "test/react-stub.js" "target/test/test.js"]
+                }}
     :test-commands {"unit-tests" ["phantomjs" :runner "test/react-stub.js" "target/test/test.js"]}})
