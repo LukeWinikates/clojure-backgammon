@@ -34,19 +34,30 @@
     #js {:onClick #(put! roll 'ignore) :className "btn" }
     "Roll"))
 
+(defn undo-view [app undo-chan]
+  (if-not (nil? (:last-state (:board app)))
+    (dom/button
+      #js {:onClick #(put! undo-chan 'ignore) :className "btn"}
+      "Undo")))
+
 (defn turn-view [app owner]
   (reify
     om/IInitState
-    (init-state [_] { :roll (chan) :activate (chan)})
+    (init-state [_] { :roll (chan) :activate (chan) :undo (chan)})
     om/IWillMount
     (will-mount [_]
       (let [roll (om/get-state owner :roll)
-            activate (om/get-state owner :activate)]
+            activate (om/get-state owner :activate)
+            undo (om/get-state owner :undo)]
         (go (loop []
               (let [msg (<! roll)]
                 (om/transact! app :board
                               dice/roll)
               (recur))))
+        (go (while true
+            (let [msg (<! undo)]
+              (om/transact! app :board
+                            board/undo))))
             (go (while true
                   (let [die (<! activate)]
                     (.log js/console "activate!")
@@ -54,11 +65,12 @@
                        (fn [board]
                          (assoc board :dice (dice/activate (:dice board) die)))))))))
     om/IRenderState
-    (render-state [this {:keys [roll activate]}]
+    (render-state [this {:keys [roll activate undo]}]
       (let [dice (:dice (:board app))]
         (dom/div nil
           (dom/h3 nil
             (str "Current player: " (name (:player (:board app)))))
+          (undo-view app undo)
           (apply dom/h3 nil
                  (map #(make-die-view % activate) dice))
           (if (dice/all-used? dice)

@@ -65,6 +65,9 @@
   (and (= 1 (:count pip))
        (= (dice/swap-player player) (:owner pip))))
 
+(defn undo [board]
+  (:last-state board))
+
 (defn apply-move [board source-pip die]
   (let [pips (:pips board)
         player (:player board)
@@ -90,5 +93,6 @@
          :dice (dice/activate (dice/use-die die dice))
          :player player
          :gutters new-gutters
+         :last-state board
          })
       board)))
