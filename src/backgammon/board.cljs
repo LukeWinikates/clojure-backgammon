@@ -61,6 +61,10 @@
   (let [pip-owner (:owner pip)]
     (= player pip-owner)))
 
+(defn is-opponent-blot? [pip player]
+  (and (= 1 (:count pip))
+       (= (dice/swap-player player) (:owner pip))))
+
 (defn apply-move [board source-pip die]
   (let [pips (:pips board)
         player (:player board)
@@ -71,7 +75,7 @@
                        (can-move-from source-pip player)
                        (can-move-to target-pip player))
         capture? (and can-move?
-                      (not (= (:player target-pip) player)))
+                      (is-opponent-blot? target-pip player))
         new-gutters (if capture?
                       (gutter/capture gutters (dice/swap-player player))
                       gutters)]
