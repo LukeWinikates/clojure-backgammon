@@ -73,7 +73,7 @@
 
 (defn make-pip-view [pip move-chan]
   (let [checker-count (:count pip)]
-    (dom/li #js { :onClick (fn [e] (send-move move-chan @pip))
+    (dom/li #js { :onDoubleClick (fn [e] (send-move move-chan @pip))
                  :className (pip-classes pip) }
             (if (= checker-count 0)
               "empty"
