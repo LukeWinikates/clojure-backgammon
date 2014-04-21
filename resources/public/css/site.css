@@ -60,7 +60,7 @@ body {
 }
 
 .pip.red {
-  background-color: brown;
+  background-color: chocolate;
 }
 
 .pip.white {
@@ -77,4 +77,15 @@ body {
 
 .pips {
   display: inline-block;
+}
+
+.btn {
+  padding: 4px;
+  background-color: chocolate;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: peru;
 }
