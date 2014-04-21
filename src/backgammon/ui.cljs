@@ -117,16 +117,16 @@
             bottom-pips (subvec pips (/ (count pips) 2) (count pips))]
         (dom/div #js{:className "board"}
           (dom/div nil "Black")
-                 (dom/div nil
-                          (dom/div #js {:className "pip-row"}
-                               (apply dom/ul #js{:className "top-pips pips" }
-                                 (map #(make-pip-view % move) top-pips)))
-                          (gutter-view black-gutter))
-                 (dom/div nil
-                          (dom/div #js {:className "pip-row" }
-                          (apply dom/ul #js{:className "bottom-pips pips"}
-                                 (map #(make-pip-view % move) bottom-pips))
-                          (gutter-view white-gutter)))
+          (dom/div nil
+                   (dom/div #js {:className "pip-row"}
+                        (apply dom/ul #js{:className "top-pips pips" }
+                          (map #(make-pip-view % move) top-pips)))
+                   (gutter-view black-gutter))
+          (dom/div nil
+                   (dom/div #js {:className "pip-row" }
+                   (apply dom/ul #js{:className "bottom-pips pips"}
+                          (map #(make-pip-view % move) bottom-pips))
+                   (gutter-view white-gutter)))
           (dom/div nil "White"))))))
 
 (defn boot []
