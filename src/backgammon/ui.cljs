@@ -49,21 +49,18 @@
       (let [roll (om/get-state owner :roll)
             activate (om/get-state owner :activate)
             undo (om/get-state owner :undo)]
-        (go (loop []
+        (go (while true
               (let [msg (<! roll)]
-                (om/transact! app :board
-                              dice/roll)
-              (recur))))
+                (om/transact! app :board dice/roll))))
         (go (while true
             (let [msg (<! undo)]
-              (om/transact! app :board
-                            board/undo))))
-            (go (while true
-                  (let [die (<! activate)]
-                    (.log js/console "activate!")
-                    (om/transact! app :board
-                       (fn [board]
-                         (assoc board :dice (dice/activate (:dice board) die)))))))))
+              (om/transact! app :board board/undo))))
+        (go (while true
+              (let [die (<! activate)]
+                (.log js/console "activate!")
+                (om/transact! app :board
+                              (fn [board]
+                                (assoc board :dice (dice/activate (:dice board) die)))))))))
     om/IRenderState
     (render-state [this {:keys [roll activate undo]}]
       (let [dice (:dice (:board app))]
