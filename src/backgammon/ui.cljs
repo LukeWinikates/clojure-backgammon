@@ -18,8 +18,7 @@
   (.log js/console "clicked!" (:index pip))
   (put! move pip))
 
-(defn die-classes
-  [die]
+(defn die-classes [die]
   (str "die "
        (if (:active die) "active-die" "inactive-die")
        (if (:used die) " used-die")))
@@ -53,8 +52,8 @@
               (let [msg (<! roll)]
                 (om/transact! app :board dice/roll))))
         (go (while true
-            (let [msg (<! undo)]
-              (om/transact! app :board board/undo))))
+              (let [msg (<! undo)]
+                (om/transact! app :board board/undo))))
         (go (while true
               (let [die (<! activate)]
                 (.log js/console "activate!")
@@ -100,11 +99,13 @@
     om/IWillMount
     (will-mount [_]
       (let [move (om/get-state owner :move)]
-        (go (loop []
+        (go (while true
           (let [pip (<! move)]
             (om/transact! app :board
-              (fn [board] (board/apply-move board pip (dice/active (:dice board)))))
-            (recur))))))
+              (fn [board]
+                (board/apply-move
+                  board
+                  (board/build-move-from-source board pip)))))))))
     om/IRenderState
     (render-state [this {:keys [move]}]
       (let [pips (:pips (:board app))

@@ -68,27 +68,36 @@
 (defn undo [board]
   (:last-state board))
 
-(defn apply-move [board source-pip die]
+(defn build-move-from-source [board source]
+  (let [active-die (dice/active (:dice board))]
+    {:source source
+     :die active-die
+     :target (find-pip board source active-die)}))
+
+(defn apply-move [board move]
   (let [pips (:pips board)
         player (:player board)
         dice (:dice board)
+        die (:die move)
         gutters (:gutters board)
-        target-pip (find-pip board source-pip die)
         can-move? (and (dice/unused? die)
-                       (can-move-from source-pip player)
-                       (can-move-to target-pip player))
+                       (can-move-from (:source move) player)
+                       (can-move-to (:target move) player))
         capture? (and can-move?
-                      (is-opponent-blot? target-pip player))
+                      (is-opponent-blot? (:target move) player))
         new-gutters (if capture?
                       (gutter/capture gutters (dice/swap-player player))
                       gutters)]
+    ;(.log js/console "args" board move)
+    ;(.log js/console "can-move-from" (can-move-from (:source move) player))
+    ;(.log js/console "can-move-to" (can-move-to (:target move) player))
     (if can-move?
       (do
         (.log js/console "we can move!")
         {
          :pips (replace
-                 { target-pip (add-checker target-pip player)
-                  source-pip (take-checker source-pip player) }
+                 { (:target move) (add-checker (:target move) player)
+                  (:source move) (take-checker (:source move) player) }
                  pips)
          :dice (dice/activate (dice/use-die die dice))
          :player player
