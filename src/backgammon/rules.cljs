@@ -2,7 +2,7 @@
 
 (defn with-captured-checkers [board move]
   (let [player (:player board)
-        player-gutter (player (:gutters board))
-        is-captured? (> (:count player-gutter) 0)]
+        player-bar (player (:bars board))
+        is-captured? (> (:count player-bar) 0)]
     (or (not is-captured?)
-        (= (:source move) player-gutter))))
+        (= (:source move) player-bar))))

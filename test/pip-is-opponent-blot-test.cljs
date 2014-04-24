@@ -4,7 +4,7 @@
   (:require [cemerick.cljs.test :as t]
             [backgammon.rules :as rules]
             [backgammon.board :as board]
-            [backgammon.gutter :as gutter]))
+            [backgammon.bar :as bar]))
 
 (deftest is-opponent-blot-test-when-pip-is-empty-returns-false
   (is (not (board/is-opponent-blot? (board/pip 0) :black))))

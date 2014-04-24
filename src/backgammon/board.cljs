@@ -1,6 +1,6 @@
 (ns backgammon.board
   (:require [backgammon.dice :as dice]
-            [backgammon.gutter :as gutter]))
+            [backgammon.bar :as bar]))
 
 (defn pip
   ([idx] (pip idx nil 0))
@@ -32,11 +32,18 @@
           (pip 23 :black 2)
           (pip 24 :black 2)]})
 
-(defn find-pip [board source-pip die]
+(defn find-pip [board source die]
   (let [pips (:pips board)
-        dir (if (= (:player board) :white) + -)
-        target-idx (dir (:index source-pip) (:value die))]
-    (nth pips (- target-idx 1))))
+        player (:player board)
+        dir (if (= player :white) + -)
+        is-bar? (= source (player (:bars board)))
+        source-idx (if is-bar?
+                    (if (= :black player)
+                      24 -1)
+                     (- (:index source) 1))
+        target-idx (dir source-idx (:value die))]
+    (.log js/console "target index" target-idx)
+    (nth pips target-idx)))
 
 
 (defn add-checker [pip color]
@@ -74,23 +81,34 @@
      :die active-die
      :target (find-pip board source active-die)}))
 
+(defn apply-move-to-bar [bar move]
+  (if (= (:source move) bar)
+    (merge bar { :count (dec (:count bar))})
+    bar))
+
+(defn apply-move-to-bars [bars move]
+  (let [black (:black bars)
+        white (:white bars)]
+  { :black (apply-move-to-bar black move)
+    :white (apply-move-to-bar white move)}))
+
 (defn apply-move [board move]
   (let [pips (:pips board)
         player (:player board)
         dice (:dice board)
         die (:die move)
-        gutters (:gutters board)
+        bars (:bars board)
         can-move? (and (dice/unused? die)
                        (can-move-from (:source move) player)
                        (can-move-to (:target move) player))
         capture? (and can-move?
                       (is-opponent-blot? (:target move) player))
-        new-gutters (if capture?
-                      (gutter/capture gutters (dice/swap-player player))
-                      gutters)]
-    ;(.log js/console "args" board move)
-    ;(.log js/console "can-move-from" (can-move-from (:source move) player))
-    ;(.log js/console "can-move-to" (can-move-to (:target move) player))
+        new-bars (if capture?
+                      (bar/capture bars (dice/swap-player player))
+                      bars)]
+    (.log js/console "args" board move)
+    (.log js/console "can-move-from" (can-move-from (:source move) player))
+    (.log js/console "can-move-to" (can-move-to (:target move) player))
     (if can-move?
       (do
         (.log js/console "we can move!")
@@ -101,7 +119,7 @@
                  pips)
          :dice (dice/activate (dice/use-die die dice))
          :player player
-         :gutters new-gutters
+         :bars (apply-move-to-bars new-bars move)
          :last-state board
          })
       board)))
