@@ -1,5 +1,6 @@
 (ns backgammon.board
   (:require [backgammon.dice :as dice]
+            [backgammon.rules :as rules]
             [backgammon.bar :as bar]))
 
 (defn pip
@@ -100,7 +101,8 @@
         bars (:bars board)
         can-move? (and (dice/unused? die)
                        (can-move-from (:source move) player)
-                       (can-move-to (:target move) player))
+                       (can-move-to (:target move) player)
+                       (rules/with-captured-checkers board move))
         capture? (and can-move?
                       (is-opponent-blot? (:target move) player))
         new-bars (if capture?

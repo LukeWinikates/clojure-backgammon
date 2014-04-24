@@ -89,7 +89,12 @@
 
 (defn bar-view [bar move-chan]
   (dom/div #js {:className "bar" :onDoubleClick (fn [e] (send-move move-chan @bar)) }
-           (str "Captured checkers: " (:count bar))))
+           (dom/h4
+             nil
+             (name (:owner bar)))
+           (dom/div
+             nil
+             (str "Captured checkers: " (:count bar)))))
 
 (defn board-view [app owner]
   (reify
@@ -114,18 +119,17 @@
             top-pips (reverse (subvec pips 0 (/(count pips) 2)))
             bottom-pips (subvec pips (/ (count pips) 2) (count pips))]
         (dom/div #js{:className "board"}
-          (dom/div nil "Black")
           (dom/div nil
                    (dom/div #js {:className "pip-row"}
                         (apply dom/ul #js{:className "top-pips pips" }
-                          (map #(make-pip-view % move) top-pips)))
-                   (bar-view black-bar move))
+                          (map #(make-pip-view % move) top-pips))
+                   (bar-view white-bar move)))
           (dom/div nil
                    (dom/div #js {:className "pip-row" }
                    (apply dom/ul #js{:className "bottom-pips pips"}
                           (map #(make-pip-view % move) bottom-pips))
-                   (bar-view white-bar move)))
-          (dom/div nil "White"))))))
+                   (bar-view black-bar move)))
+          )))))
 
 (defn boot []
   (om/root
