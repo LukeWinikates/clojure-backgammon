@@ -33,6 +33,10 @@
           (pip 23 :black 2)
           (pip 24 :black 2)]})
 
+(defn make-score-pips []
+  { :black (pip :black-scored :black 0)
+    :white (pip :white-scored :white 0) })
+
 (defn find-pip [board source die]
   (let [pips (:pips board)
         player (:player board)
@@ -42,9 +46,14 @@
                     (if (= :black player)
                       24 -1)
                      (- (:index source) 1))
-        target-idx (dir source-idx (:value die))]
+        target-idx (dir source-idx (:value die))
+        bear-off? (or
+                    (and (= player :black) (< target-idx 0))
+                    (and (= player :white) (> target-idx 23)))]
     (.log js/console "target index" target-idx)
-    (nth pips target-idx)))
+    (if bear-off?
+      (player (:scored board))
+      (nth pips target-idx))))
 
 
 (defn add-checker [pip color]
@@ -102,7 +111,8 @@
         can-move? (and (dice/unused? die)
                        (can-move-from (:source move) player)
                        (can-move-to (:target move) player)
-                       (rules/with-captured-checkers board move))
+                       (rules/with-captured-checkers board move)
+                       (rules/bearing-off board move))
         capture? (and can-move?
                       (is-opponent-blot? (:target move) player))
         new-bars (if capture?
