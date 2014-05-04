@@ -83,8 +83,7 @@
   (let [checker-count (:count pip)]
     (dom/li #js { :onDoubleClick (fn [e] (send-move move-chan @pip))
                  :className (pip-classes pip) }
-            (if (= checker-count 0)
-              "empty"
+            (if (> checker-count 0)
               (str (name (:owner pip)) ": " checker-count)))))
 
 (defn bar-view [bar move-chan]
