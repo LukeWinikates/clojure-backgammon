@@ -1,28 +1,43 @@
+one = #067F54;
+two = #59FFC3;
+three = #0DFFA7;
+four = #2D8062;
+five = #0ACC86;
+
+border-color = #73FF80;
+active-die-color = #C0FF67;
+used-die-color = gray;
+
 * {
   box-sizing: border-box;
 }
+
 .bordered {
-  border: 2px solid #73ff80;
+  border: 2px solid border-color;
 }
+
 body {
-  background-image: url("/images/background.png");
+  background-image: url('/images/background.png');
 }
+
 .content {
   max-width: 1024px;
   margin: auto;
-  background-color: #fdf5e6;
+  background-color: oldlace;
   height: 100%;
   padding: 12px;
 }
+
 .row {
   min-height: 520px;
+  &:after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+  }
 }
-.row:after {
-  content: " ";
-  display: block;
-  height: 0;
-  clear: both;
-}
+
 #sidebar {
   display: inline-block;
   float: left;
@@ -30,46 +45,55 @@ body {
   height: 100%;
   padding: 4px;
 }
+
 #main-panel {
   display: inline-block;
   float: left;
   width: calc(82% - 12px);
-  border-right: 2px solid #73ff80;
+  border-right: 2px solid border-color;
   padding: 4px;
 }
+
 .die {
   height: 3em;
   width: 3em;
-  border: 1px solid #000;
+  border: 1px solid black;
   margin: 3px;
   display: table-cell;
   cursor: pointer;
   vertical-align: middle;
   text-align: center;
 }
+
 .active-die {
-  background-color: #c0ff67;
+  background-color: active-die-color;
 }
+
 .used-die {
-  background-color: #808080;
+  background-color: used-die-color;
 }
+
 .pip-row {
   display: inline-block;
 }
+
 .pip {
   display: inline-flex;
   height: 200px;
   width: 40px;
-  border: 1px solid #000;
+  border: 1px solid black;
   -webkit-user-select: none;
   vertical-align: top;
 }
+
 .pip.red {
-  background-color: #d2691e;
+  background-color: chocolate;
 }
+
 .pip.white {
-  background-color: #fff;
+  background-color: white;
 }
+
 .bar {
   padding: 0px 20px;
   display: inline-block;
@@ -77,15 +101,18 @@ body {
   position: relative;
   top: 20px;
 }
+
 .pips {
   display: inline-block;
 }
+
 .btn {
   padding: 4px;
-  background-color: #d2691e;
+  background-color: chocolate;
   border: none;
   cursor: pointer;
 }
+
 .btn:hover {
-  background-color: #cd853f;
+  background-color: peru;
 }

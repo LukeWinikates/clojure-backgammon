@@ -1,0 +1,22 @@
+{
+  "name": "backgammon",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/LukeWinikates/clojure-backgammon.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/LukeWinikates/clojure-backgammon/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-stylus": "~0.15.1"
+  }
+}
