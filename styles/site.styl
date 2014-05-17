@@ -1,15 +1,16 @@
-one = #067F54;
-two = #59FFC3;
-three = #0DFFA7;
-four = #2D8062;
-five = #0ACC86;
-
-border-color = #73FF80;
-active-die-color = #C0FF67;
+border-color = gray;
+active-die-color = #288F49;
 used-die-color = gray;
+dark-pip-color = #A9464D;
+dark-pip-color = #F5B159;
 
 * {
   box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.brand {
+  margin: 24px;
 }
 
 .bordered {
@@ -77,17 +78,20 @@ body {
   display: inline-block;
 }
 
+.pips {
+}
+
 .pip {
   display: inline-flex;
   height: 200px;
-  width: 40px;
+  width: 45px;
   border: 1px solid black;
   -webkit-user-select: none;
   vertical-align: top;
 }
 
 .pip.red {
-  background-color: chocolate;
+  background-color: dark-pip-color;
 }
 
 .pip.white {
@@ -97,7 +101,6 @@ body {
 .bar {
   padding: 0px 20px;
   display: inline-block;
-  width: 124px;
   position: relative;
   top: 20px;
 }

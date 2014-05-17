@@ -1,8 +1,12 @@
 * {
   box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+.brand {
+  margin: 24px;
 }
 .bordered {
-  border: 2px solid #73ff80;
+  border: 2px solid #808080;
 }
 body {
   background-image: url("/images/background.png");
@@ -34,7 +38,7 @@ body {
   display: inline-block;
   float: left;
   width: calc(82% - 12px);
-  border-right: 2px solid #73ff80;
+  border-right: 2px solid #808080;
   padding: 4px;
 }
 .die {
@@ -48,7 +52,7 @@ body {
   text-align: center;
 }
 .active-die {
-  background-color: #c0ff67;
+  background-color: #288f49;
 }
 .used-die {
   background-color: #808080;
@@ -59,13 +63,13 @@ body {
 .pip {
   display: inline-flex;
   height: 200px;
-  width: 40px;
+  width: 45px;
   border: 1px solid #000;
   -webkit-user-select: none;
   vertical-align: top;
 }
 .pip.red {
-  background-color: #d2691e;
+  background-color: #f5b159;
 }
 .pip.white {
   background-color: #fff;
@@ -73,7 +77,6 @@ body {
 .bar {
   padding: 0px 20px;
   display: inline-block;
-  width: 124px;
   position: relative;
   top: 20px;
 }
