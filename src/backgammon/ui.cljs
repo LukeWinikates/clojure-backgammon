@@ -8,15 +8,28 @@
             [backgammon.bar :as bar]
             [cljs.core.async :refer [put! chan <!]]))
 
-(def app-state (atom
-   {:board (merge
-             (board/nack-board)
-             (dice/pick-first-player)
-             { :bars { :white { :count 0 :owner :white } :black { :count 0 :owner :black } } } )}))
+(defn new-game []
+  (let [pick (dice/pick-first-player)
+        player (:player pick)]
+  {:board (merge
+            { :notifications [(str (name player) " moves first!")] }
+            (board/nack-board)
+            pick
+            { :bars { :white { :count 0 :owner :white } :black { :count 0 :owner :black } } } )}))
+
+
+(def app-state (atom (new-game)))
 
 (defn send-move [move pip]
   (.log js/console "clicked!" (:index pip) pip)
   (put! move pip))
+
+(defn notifications-view [notifications]
+  (dom/div
+    #js{:className "notifications bordered"}
+    (apply
+      #(dom/div #js{:className "notification"} %)
+      notifications)))
 
 (defn die-classes [die]
   (str "die "
@@ -117,18 +130,21 @@
             white-bar (:white (:bars (:board app)))
             top-pips (reverse (subvec pips 0 (/(count pips) 2)))
             bottom-pips (subvec pips (/ (count pips) 2) (count pips))]
-        (dom/div #js{:className "board"}
-          (dom/div nil
-                   (dom/div #js {:className "pip-row"}
-                        (apply dom/ul #js{:className "top-pips pips" }
-                          (map #(make-pip-view % move) top-pips))
-                   (bar-view white-bar move)))
-          (dom/div nil
-                   (dom/div #js {:className "pip-row" }
-                   (apply dom/ul #js{:className "bottom-pips pips"}
-                          (map #(make-pip-view % move) bottom-pips))
-                   (bar-view black-bar move)))
-          )))))
+        (dom/div
+          nil
+          (notifications-view (:notifications (:board app)))
+          (dom/div #js{:className "board"}
+            (dom/div nil
+                     (dom/div #js {:className "pip-row"}
+                          (apply dom/ul #js{:className "top-pips pips" }
+                            (map #(make-pip-view % move) top-pips))
+                     (bar-view white-bar move)))
+            (dom/div nil
+                     (dom/div #js {:className "pip-row" }
+                     (apply dom/ul #js{:className "bottom-pips pips"}
+                            (map #(make-pip-view % move) bottom-pips))
+                     (bar-view black-bar move)))
+            ))))))
 
 (defn boot []
   (om/root
