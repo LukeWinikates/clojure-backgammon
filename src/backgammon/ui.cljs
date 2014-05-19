@@ -100,13 +100,39 @@
               (str (name (:owner pip)) ": " checker-count)))))
 
 (defn bar-view [bar move-chan]
-  (dom/div #js {:className "bar" :onDoubleClick (fn [e] (send-move move-chan @bar)) }
-           (dom/h4
-             nil
-             (name (:owner bar)))
-           (dom/div
-             nil
-             (str "Captured checkers: " (:count bar)))))
+  (dom/li #js {:className "bar pip" :onDoubleClick (fn [e] (send-move move-chan @bar)) }
+           ;(dom/h4
+             ;nil
+             ;(name (:owner bar)))
+           ;(dom/div
+             ;nil
+             (str (name (:owner bar)) ": " (:count bar))))
+
+
+(defn black-home [board]
+  (let [pips (:pips board)]
+    (reverse (subvec (:pips board) 0 (/ (count pips) 4)))))
+
+(defn black-outer [board]
+  (let [pips (:pips board)
+        quad (/ (count pips) 4)
+        start quad
+        end (* 2 quad)]
+    (reverse (subvec (:pips board) start end))))
+
+(defn white-outer [board]
+  (let [pips (:pips board)
+        quad (/ (count pips) 4)
+        start (* 2 quad)
+        end (* 3 quad)]
+    (subvec (:pips board) start end)))
+
+(defn white-home [board]
+  (let [pips (:pips board)
+        quad (/ (count pips) 4)
+        start (* 3 quad)
+        end (count pips)]
+    (subvec (:pips board) start end)))
 
 (defn board-view [app owner]
   (reify
@@ -133,18 +159,34 @@
         (dom/div
           nil
           (notifications-view (:notifications (:board app)))
-          (dom/div #js{:className "board"}
-            (dom/div nil
-                     (dom/div #js {:className "pip-row"}
-                          (apply dom/ul #js{:className "top-pips pips" }
-                            (map #(make-pip-view % move) top-pips))
-                     (bar-view white-bar move)))
-            (dom/div nil
-                     (dom/div #js {:className "pip-row" }
-                     (apply dom/ul #js{:className "bottom-pips pips"}
-                            (map #(make-pip-view % move) bottom-pips))
-                     (bar-view black-bar move)))
-            ))))))
+          (dom/div
+            #js{:className "board"}
+            (let [home (black-home (:board app))
+                  outer (black-outer (:board app))]
+              (dom/div
+                nil
+                (dom/div
+                  #js {:className "pip-row"}
+                  (apply
+                    dom/ul
+                    #js{:className "top-pips pips" }
+                    (concat
+                      (map #(make-pip-view % move) outer)
+                      [(bar-view white-bar move)]
+                      (map #(make-pip-view % move) home))))))
+            (let [home (white-home (:board app))
+                  outer (white-outer (:board app))]
+              (dom/div
+                nil
+                (dom/div
+                  #js {:className "pip-row"}
+                  (apply
+                    dom/ul
+                    #js{:className "top-pips pips" }
+                    (concat
+                      (map #(make-pip-view % move) outer)
+                      [(bar-view black-bar move)]
+                      (map #(make-pip-view % move) home))))))))))))
 
 (defn boot []
   (om/root

@@ -3,6 +3,7 @@ active-die-color = #288F49;
 used-die-color = gray;
 dark-pip-color = #A9464D;
 dark-pip-color = #F5B159;
+bar-color = #765325;
 
 * {
   box-sizing: border-box;
@@ -90,6 +91,10 @@ body {
   padding: 0;
 }
 
+.bar {
+  background-color: bar-color;
+}
+
 .pip {
   display: inline-flex;
   height: 200px;
@@ -105,13 +110,6 @@ body {
 
 .pip.white {
   background-color: white;
-}
-
-.bar {
-  padding: 0px 20px;
-  display: inline-block;
-  position: relative;
-  top: 20px;
 }
 
 .pips {
