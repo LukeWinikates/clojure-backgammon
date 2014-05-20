@@ -101,12 +101,7 @@
 
 (defn bar-view [bar move-chan]
   (dom/li #js {:className "bar pip" :onDoubleClick (fn [e] (send-move move-chan @bar)) }
-           ;(dom/h4
-             ;nil
-             ;(name (:owner bar)))
-           ;(dom/div
-             ;nil
-             (str (name (:owner bar)) ": " (:count bar))))
+          (str (name (:owner bar)) ": " (:count bar))))
 
 
 (defn black-home [board]
