@@ -4,15 +4,17 @@
             [om.dom :as dom :include-macros true]
             [clojure.string]
             [backgammon.dice :as dice]
+            [backgammon.notifications :as notf]
             [backgammon.board :as board]
             [backgammon.bar :as bar]
             [cljs.core.async :refer [put! chan <!]]))
 
 (defn new-game []
   (let [pick (dice/pick-first-player)
-        player (:player pick)]
+        player (:player pick)
+        notifications (notf/add (str (name player) " moves first!")(notf/init))]
   {:board (merge
-            { :notifications [(str (name player) " moves first!")] }
+            { :notifications notifications }
             (board/nack-board)
             pick
             { :bars { :white { :count 0 :owner :white } :black { :count 0 :owner :black } } } )}))
@@ -25,12 +27,11 @@
   (put! move pip))
 
 (defn notifications-view [notifications]
-  (apply
-    dom/div
-      #js{:className "notifications bordered"}
-      (map
-        #(dom/div #js{:className "notification"} %)
-        notifications)))
+  (dom/div
+    #js{:className "notifications bordered"}
+    (dom/div
+      #js{:className "notification"}
+      (:text (:active notifications)))))
 
 (defn die-classes [die]
   (str "die "

@@ -1,4 +1,5 @@
-(ns backgammon.dice)
+(ns backgammon.dice
+  (:require [backgammon.notifications :as notf]))
 
 (defn roll-one []
   (+ 1 (rand-int 6)))
@@ -57,7 +58,7 @@
 (defn roll
   [board]
   (merge board
-         { :notifications (cons (str (name (swap-player (:player board))) "'s turn!") (:notifications board))
+         { :notifications (notf/add (str (name (swap-player (:player board))) "'s turn!") (:notifications board))
            :player (swap-player (:player board))
            :dice (roll-dice) }))
 
