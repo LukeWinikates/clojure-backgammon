@@ -57,7 +57,8 @@
 (defn roll
   [board]
   (merge board
-         { :player (swap-player (:player board))
+         { :notifications (cons (str (name (swap-player (:player board))) "'s turn!") (:notifications board))
+           :player (swap-player (:player board))
            :dice (roll-dice) }))
 
 (defn unused? [die]

@@ -25,11 +25,12 @@
   (put! move pip))
 
 (defn notifications-view [notifications]
-  (dom/div
-    #js{:className "notifications bordered"}
-    (apply
-      #(dom/div #js{:className "notification"} %)
-      notifications)))
+  (apply
+    dom/div
+      #js{:className "notifications bordered"}
+      (map
+        #(dom/div #js{:className "notification"} %)
+        notifications)))
 
 (defn die-classes [die]
   (str "die "

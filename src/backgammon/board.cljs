@@ -124,14 +124,16 @@
     (if can-move?
       (do
         (.log js/console "we can move!")
-        {
-         :pips (replace
-                 { (:target move) (add-checker (:target move) player)
-                  (:source move) (take-checker (:source move) player) }
-                 pips)
-         :dice (dice/activate (dice/use-die die dice))
-         :player player
-         :bars (apply-move-to-bars new-bars move)
-         :last-state board
-         })
+        (merge
+          board
+          {
+           :pips (replace
+                   { (:target move) (add-checker (:target move) player)
+                    (:source move) (take-checker (:source move) player) }
+                   pips)
+           :dice (dice/activate (dice/use-die die dice))
+           :player player
+           :bars (apply-move-to-bars new-bars move)
+           :last-state board
+           }))
       board)))
