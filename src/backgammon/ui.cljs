@@ -5,6 +5,7 @@
             [clojure.string]
             [backgammon.dice :as dice]
             [backgammon.notifications :as notf]
+            [backgammon.notifications-view :as notfv]
             [backgammon.board :as board]
             [backgammon.bar :as bar]
             [cljs.core.async :refer [put! chan <!]]))
@@ -19,19 +20,11 @@
             pick
             { :bars { :white { :count 0 :owner :white } :black { :count 0 :owner :black } } } )}))
 
-
 (def app-state (atom (new-game)))
 
 (defn send-move [move pip]
   (.log js/console "clicked!" (:index pip) pip)
   (put! move pip))
-
-(defn notifications-view [notifications]
-  (dom/div
-    #js{:className "notifications bordered"}
-    (dom/div
-      #js{:className "notification"}
-      (:text (:active notifications)))))
 
 (defn die-classes [die]
   (str "die "
@@ -131,14 +124,19 @@
         end (count pips)]
     (subvec (:pips board) start end)))
 
+
 (defn board-view [app owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:move (chan)})
+      {:move (chan) :spin-notification (chan)})
     om/IWillMount
     (will-mount [_]
-      (let [move (om/get-state owner :move)]
+      (let [move (om/get-state owner :move)
+            spin (om/get-state owner :spin-notification)]
+        (go (while true
+              (let [dir (<! spin)]
+                (om/transact! app :board #(notf/page-notifications % dir)))))
         (go (while true
           (let [pip (<! move)]
             (om/transact! app :board
@@ -147,7 +145,7 @@
                   board
                   (board/build-move-from-source board pip)))))))))
     om/IRenderState
-    (render-state [this {:keys [move]}]
+    (render-state [this {:keys [move spin-notification]}]
       (let [pips (:pips (:board app))
             black-bar (:black (:bars (:board app)))
             white-bar (:white (:bars (:board app)))
@@ -155,7 +153,7 @@
             bottom-pips (subvec pips (/ (count pips) 2) (count pips))]
         (dom/div
           nil
-          (notifications-view (:notifications (:board app)))
+          (notfv/notifications-view (:notifications (:board app)) spin-notification)
           (dom/div
             #js{:className "board"}
             (let [home (black-home (:board app))
