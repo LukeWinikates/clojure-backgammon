@@ -11,3 +11,4 @@ pom.xml.asc
 resources/public/main.js
 resources/public/css/
 node_modules
+.idea/
