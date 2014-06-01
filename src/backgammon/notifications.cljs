@@ -21,7 +21,7 @@
         { :current new-notification
           :list (cons new-notification (:list notifications))}))
 
-(defn init [] (add "foo!" {:list []}))
+(defn init [] {:list []})
 
 (defn indexOf [s item]
   (if (= (first s) item)

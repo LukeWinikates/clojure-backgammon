@@ -7,17 +7,17 @@
 
 (defn notifications-view [notifications spin-notification]
   (dom/div
-    #js{:className "notifications bordered"}
+    #js {:className "notifications bordered"}
     (dom/div
-      #js{:className "notification"}
+      #js {:className "notification"}
       (dom/span nil (:text (:current notifications)))
       (dom/span
-        #js{:className "spinners pull-right noselect"}
+        #js {:className "spinners pull-right noselect"}
         (if (notf/has-prev? notifications)
           (dom/span
-            #js{:onClick (fn [e] (put! spin-notification -))}
+            #js {:onClick (fn [e] (put! spin-notification -))}
             "<"))
         (if (notf/has-next? notifications)
           (dom/span
-            #js{:onClick (fn [e] (put! spin-notification +))}
+            #js {:onClick (fn [e] (put! spin-notification +))}
             ">"))))))
