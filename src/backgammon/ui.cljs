@@ -9,6 +9,7 @@
             [backgammon.board :as board]
             [backgammon.bar :as bar]
             [backgammon.die-view :as die-view]
+            [backgammon.components.turn-view :as turn-view]
             [cljs.core.async :refer [put! chan <!]]))
 
 (defn new-game []
@@ -27,50 +28,6 @@
   (.log js/console "clicked!" (:index pip) pip)
   (put! move pip))
 
-(defn make-roll-button [roll]
-  (dom/button
-    #js {:onClick #(put! roll 'ignore) :className "btn" }
-    "Roll"))
-
-(defn undo-view [app undo-chan]
-  (if-not (nil? (:last-state (:board app)))
-    (dom/button
-      #js {:onClick #(put! undo-chan 'ignore) :className "btn"}
-      "Undo")))
-
-(defn turn-view [app owner]
-  (reify
-    om/IInitState
-    (init-state [_] { :roll (chan) :activate (chan) :undo (chan)})
-    om/IWillMount
-    (will-mount [_]
-      (let [roll (om/get-state owner :roll)
-            activate (om/get-state owner :activate)
-            undo (om/get-state owner :undo)]
-        (go (while true
-              (let [msg (<! roll)]
-                (om/transact! app :board dice/roll))))
-        (go (while true
-              (let [msg (<! undo)]
-                (om/transact! app :board board/undo))))
-        (go (while true
-              (let [die (<! activate)]
-                (.log js/console "activate!")
-                (om/transact! app :board
-                              (fn [board]
-                                (assoc board :dice (dice/activate (:dice board) die)))))))))
-    om/IRenderState
-    (render-state [this {:keys [roll activate undo]}]
-      (let [dice (:dice (:board app))]
-        (dom/div nil
-          (dom/h3 nil
-            (str "Current player: " (name (:player (:board app)))))
-          (undo-view app undo)
-          (apply dom/h3 nil
-                 (map #(die-view/build % activate) dice))
-          (if (dice/all-used? dice)
-            (make-roll-button roll)))))))
-
 (defn pip-classes [pip]
   (clojure.string.join " "
     ["pip"
@@ -88,7 +45,6 @@
 (defn bar-view [bar move-chan]
   (dom/li #js {:className "bar pip" :onDoubleClick (fn [e] (send-move move-chan @bar)) }
           (str (name (:owner bar)) ": " (:count bar))))
-
 
 (defn black-home [board]
   (let [pips (:pips board)]
@@ -114,7 +70,6 @@
         start (* 3 quad)
         end (count pips)]
     (subvec (:pips board) start end)))
-
 
 (defn board-view [app owner]
   (reify
@@ -176,7 +131,7 @@
 
 (defn boot []
   (om/root
-    turn-view
+    turn-view/build
     app-state
     {:target (. js/document (getElementById "sidebar"))})
 
