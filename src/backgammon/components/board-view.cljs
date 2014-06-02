@@ -25,7 +25,7 @@
               (str (name (:owner pip)) ": " checker-count)))))
 
 (defn bar-view [bar move-chan]
-  (dom/li #js {:className "bar pip" :onDoubleClick #(send-move move-chan @bar) }
+  (dom/li #js {:className "bar pip" :onDoubleClick #(put! move-chan @bar) }
           (str (name (:owner bar)) ": " (:count bar))))
 
 (defn black-home [board]
