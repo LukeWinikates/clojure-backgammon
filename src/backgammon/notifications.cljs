@@ -1,6 +1,5 @@
 (ns backgammon.notifications)
 
-
 (defn create [string] { :text string })
 
 (defn has-prev? [notifications]

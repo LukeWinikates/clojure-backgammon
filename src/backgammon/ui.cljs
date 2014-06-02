@@ -8,6 +8,7 @@
             [backgammon.notifications-view :as notfv]
             [backgammon.board :as board]
             [backgammon.bar :as bar]
+            [backgammon.die-view :as die-view]
             [cljs.core.async :refer [put! chan <!]]))
 
 (defn new-game []
@@ -25,16 +26,6 @@
 (defn send-move [move pip]
   (.log js/console "clicked!" (:index pip) pip)
   (put! move pip))
-
-(defn die-classes [die]
-  (str "die "
-       (if (:active die) "active-die" "inactive-die")
-       (if (:used die) " used-die")))
-
-(defn make-die-view [die activate]
-  (dom/div #js { :onClick (fn [e] (put! activate die))
-                :className (die-classes die) }
-           (:value die)))
 
 (defn make-roll-button [roll]
   (dom/button
@@ -76,7 +67,7 @@
             (str "Current player: " (name (:player (:board app)))))
           (undo-view app undo)
           (apply dom/h3 nil
-                 (map #(make-die-view % activate) dice))
+                 (map #(die-view/build % activate) dice))
           (if (dice/all-used? dice)
             (make-roll-button roll)))))))
 
