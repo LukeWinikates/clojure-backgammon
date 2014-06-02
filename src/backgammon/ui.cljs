@@ -8,21 +8,11 @@
             [backgammon.notifications-view :as notfv]
             [backgammon.board :as board]
             [backgammon.bar :as bar]
-            [backgammon.die-view :as die-view]
+            [backgammon.game :as game]
             [backgammon.components.turn-view :as turn-view]
             [cljs.core.async :refer [put! chan <!]]))
 
-(defn new-game []
-  (let [pick (dice/pick-first-player)
-        player (:player pick)
-        notifications (notf/add (str (name player) " moves first!")(notf/init))]
-  {:board (merge
-            { :notifications notifications }
-            (board/nack-board)
-            pick
-            { :bars { :white { :count 0 :owner :white } :black { :count 0 :owner :black } } } )}))
-
-(def app-state (atom (new-game)))
+(def app-state (atom (game/new-game)))
 
 (defn send-move [move pip]
   (.log js/console "clicked!" (:index pip) pip)
