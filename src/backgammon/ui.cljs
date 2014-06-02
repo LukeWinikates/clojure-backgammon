@@ -23,13 +23,13 @@
 
 (defn make-pip-view [pip move-chan]
   (let [checker-count (:count pip)]
-    (dom/li #js { :onDoubleClick (fn [e] (put! move-chan @pip))
+    (dom/li #js { :onDoubleClick #(put! move-chan @pip)
                  :className (pip-classes pip) }
             (if (> checker-count 0)
               (str (name (:owner pip)) ": " checker-count)))))
 
 (defn bar-view [bar move-chan]
-  (dom/li #js {:className "bar pip" :onDoubleClick (fn [e] (send-move move-chan @bar)) }
+  (dom/li #js {:className "bar pip" :onDoubleClick #(send-move move-chan @bar) }
           (str (name (:owner bar)) ": " (:count bar))))
 
 (defn black-home [board]
