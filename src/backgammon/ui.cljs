@@ -14,10 +14,6 @@
 
 (def app-state (atom (game/new-game)))
 
-(defn send-move [move pip]
-  (.log js/console "clicked!" (:index pip) pip)
-  (put! move pip))
-
 (defn pip-classes [pip]
   (clojure.string.join " "
     ["pip"
@@ -27,7 +23,7 @@
 
 (defn make-pip-view [pip move-chan]
   (let [checker-count (:count pip)]
-    (dom/li #js { :onDoubleClick (fn [e] (send-move move-chan @pip))
+    (dom/li #js { :onDoubleClick (fn [e] (put! move-chan @pip))
                  :className (pip-classes pip) }
             (if (> checker-count 0)
               (str (name (:owner pip)) ": " checker-count)))))
