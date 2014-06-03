@@ -4,6 +4,7 @@
             [om.dom :as dom :include-macros true]
             [backgammon.dice :as dice]
             [backgammon.die-view :as die-view]
+            [backgammon.components.stats-view :as stats-view]
             [cljs.core.async :refer [put! chan <!]]))
 
 (defn undo-view [app undo-chan]
@@ -48,5 +49,7 @@
           (apply dom/h3 nil
                  (map #(die-view/build % activate) dice))
           (if (dice/all-used? dice)
-            (make-roll-button roll)))))))
+            (make-roll-button roll))
+          (dom/hr nil nil)
+          (stats-view/build (:board app)))))))
 
