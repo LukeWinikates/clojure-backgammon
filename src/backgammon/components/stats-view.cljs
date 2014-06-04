@@ -21,4 +21,4 @@
           nil
           (dom/td nil "Pips")
           (dom/td nil (:black (stats/pip-score board)))
-          (dom/td nil 10)))))))
+          (dom/td nil (:white (stats/pip-score board)))))))))
