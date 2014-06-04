@@ -16,3 +16,15 @@
             acc)))
       {:black 0 :white 0 }
       pips)))
+
+(defn peril [board]
+  (let [pips (:pips board)]
+    (reduce
+      (fn [acc, pip]
+        (let [owner (:owner pip)
+              old-val (get acc owner)]
+          (if (= 1 (:count pip))
+            (assoc acc owner (+ 1 old-val))
+            acc)))
+      {:black 0 :white 0 }
+      pips)))
