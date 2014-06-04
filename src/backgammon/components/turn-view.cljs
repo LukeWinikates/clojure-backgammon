@@ -3,6 +3,7 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [backgammon.dice :as dice]
+            [backgammon.board :as board]
             [backgammon.die-view :as die-view]
             [backgammon.components.stats-view :as stats-view]
             [cljs.core.async :refer [put! chan <!]]))
