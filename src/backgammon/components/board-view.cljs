@@ -17,12 +17,25 @@
         "red"
         "black")]))
 
+(defn checker-classes [pip]
+  (clojure.string.join
+    " "
+    ["checker"
+    (if-not (nil? (:owner pip))
+      (str "checker-" (name (:owner pip))))]))
+
+
 (defn make-pip-view [pip move-chan]
   (let [checker-count (:count pip)]
-    (dom/li #js { :onDoubleClick #(put! move-chan @pip)
-                 :className (pip-classes pip) }
-            (if (> checker-count 0)
-              (str (name (:owner pip)) ": " checker-count)))))
+    (dom/li
+      #js { :onDoubleClick #(put! move-chan @pip)
+           :className (pip-classes pip) }
+      (apply
+        dom/ul
+        nil
+        (map
+          #(dom/li #js { :className (checker-classes pip) } "" )
+          (range checker-count))))))
 
 (defn bar-classes [bar]
   (clojure.string.join
