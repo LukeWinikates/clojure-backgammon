@@ -24,18 +24,21 @@
     (if-not (nil? (:owner pip))
       (str "checker-" (name (:owner pip))))]))
 
+(defn render-checkers [piplike]
+  (let [checker-count (:count piplike)]
+    (apply
+      dom/ul
+      nil
+      (map
+        #(dom/li #js { :className (checker-classes piplike) } "" )
+        (range checker-count)))))
+
 
 (defn make-pip-view [pip move-chan]
-  (let [checker-count (:count pip)]
-    (dom/li
-      #js { :onDoubleClick #(put! move-chan @pip)
-           :className (pip-classes pip) }
-      (apply
-        dom/ul
-        nil
-        (map
-          #(dom/li #js { :className (checker-classes pip) } "" )
-          (range checker-count))))))
+  (dom/li
+    #js { :onDoubleClick #(put! move-chan @pip)
+         :className (pip-classes pip) }
+    (render-checkers pip)))
 
 (defn bar-classes [bar]
   (clojure.string.join
@@ -45,8 +48,9 @@
        "bar-active")]))
 
 (defn bar-view [bar move-chan]
-  (dom/li #js {:className (bar-classes bar) :onDoubleClick #(put! move-chan @bar) }
-          (str (name (:owner bar)) ": " (:count bar))))
+  (dom/li
+    #js {:className (bar-classes bar) :onDoubleClick #(put! move-chan @bar) }
+    (render-checkers bar)))
 
 (defn black-home [board]
   (let [pips (:pips board)]
