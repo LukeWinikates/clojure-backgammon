@@ -24,8 +24,15 @@
             (if (> checker-count 0)
               (str (name (:owner pip)) ": " checker-count)))))
 
+(defn bar-classes [bar]
+  (clojure.string.join
+    " "
+    ["pip bar"
+     (if (> (:count bar) 0)
+       "bar-active")]))
+
 (defn bar-view [bar move-chan]
-  (dom/li #js {:className "bar pip" :onDoubleClick #(put! move-chan @bar) }
+  (dom/li #js {:className (bar-classes bar) :onDoubleClick #(put! move-chan @bar) }
           (str (name (:owner bar)) ": " (:count bar))))
 
 (defn black-home [board]
